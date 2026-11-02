@@ -1,0 +1,19 @@
+0.: Ismertetés
+- Struktúra bemutatása
+- Elmélet elmagyarázása
+- Node bemutatása elmagyarázása
+- Alapok összefoglalása
+
+1.: Alapok
+- Iratlan szabáklyok:
+    . kisNagy betűs változók
+    . mindennekPontosNeveVan()
+    . Mindent IS logba írunk
+    . Error nincs csak máshogy fut le
+- HTML-be illesztés
+- Eventek és társai
+- Function haszna és használata
+- var/let/const Melyiket mikor?
+- Kérdések
+- Gyakorlat
+- Elemzés
