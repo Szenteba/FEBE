@@ -19,6 +19,7 @@ export const userRepository = {
         return rows[0] || null;
     },
 
+
     async findByName(nev) {
         const [rows] = await db.query('SELECT nev FROM teszt WHERE nev = ?', [nev]);
         return rows[0] || null;
@@ -30,5 +31,14 @@ export const userRepository = {
             [nev, email]
         );
         return { id: result.insertId, nev, email };
+    },
+
+    async lekerUser(){
+        const [rows] = await db.query('SELECT teszt.nev, teszt.ranks from teszt')
+
+        return rows.map(row => ({
+            nev: row.nev,
+            rank: row.ranks
+        }));
     }
 };

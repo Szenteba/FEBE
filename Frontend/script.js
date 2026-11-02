@@ -1,3 +1,4 @@
+window.onload = console.log("Iloveu");
 // DOM Elemek referenciái
 const button = document.getElementById('get_user_id');
 const button2 = document.getElementById('senduser');
@@ -7,6 +8,8 @@ const userStatus = document.getElementById('user_id');
 const loginInput = document.getElementById('login_teszt_input');
 const select = document.getElementById('selects');
 const errorDisplay = document.getElementById('error');
+const LekérGomb = document.getElementById('get_All_User');
+const tabla = document.getElementById('tablazat');
 
 // Felület frissítése az autentikációs állapot alapján
 const updateAuthUI = (isLoggedIn, userId = null) => {
@@ -141,4 +144,16 @@ if (logoutBtn) {
       if (errorDisplay) errorDisplay.innerText = 'Hiba a kijelentkezéskor: ' + error.message;
     }
   });
+}
+
+if(LekérGomb) {
+  LekérGomb.addEventListener('click', async () => {
+    const response = await fetch('http://localhost:3000/api/leker', {
+      method: 'GET',
+      credentials: 'include'
+    })
+    .then(response => {
+      tabla.innerHTML += '<ul>'+response.body+'</ul>'
+    })
+  })
 }

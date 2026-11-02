@@ -79,5 +79,14 @@ export const userController = {
             loggedIn: true,
             userId: result.session.userId
         });
+    },
+
+    async lekerUser(req, res){
+        const user = userService.lekerUser();
+
+        return res.status(200).json({
+            nev: user.nev || null,
+            rank: user.rank || null
+        })
     }
 };
