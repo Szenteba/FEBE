@@ -1,161 +1,144 @@
-import { response } from "express";
-import { log } from "node:console";
-
-window.onload = function() { console.log("Az oldal betöltődött"); };
-
-// Megvárja az oldal betöltődését
-window.onload = function() { console.log("Az oldal betöltődött"); };
-
-//Betöltéskori figyelés
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const response = await fetch('http://localhost:3000/api/check-session', {
-      method: 'GET',
-      credentials: 'include' // Elküldi a mentett HttpOnly cookie-t a kéréssel
-    });
-
-    if (!response.ok) {
-      throw new Error('Nincs bejelentkezve');
-    }
-
-    const data = await response.json();
-
-    if (data.loggedIn) {
-      // Be van jelentkezve: UI frissítése
-      document.getElementById('user_id').innerText = `Bejelentkezve: ${data.userId}`;
-      button3.style.display = 'none';
-      document.getElementById('login_teszt_input').style.display = 'none';
-      logoutBtn.style.display = 'inline-block';
-    }
-  } catch (error) {
-    // Nincs érvényes session: bejelentkezési elemek megjelenítése
-    button3.style.display = 'inline-block';
-  }
-});
-
-const button = document.getElementById('get_user_id'); // Referencia a lekérdező gombra
-const button2 = document.getElementById('senduser'); // Referencia a küldő gombra
+// DOM Elemek referenciái
+const button = document.getElementById('get_user_id');
+const button2 = document.getElementById('senduser');
 const button3 = document.getElementById('login_teszt');
 const logoutBtn = document.getElementById('logout_btn');
 const userStatus = document.getElementById('user_id');
 const loginInput = document.getElementById('login_teszt_input');
 const select = document.getElementById('selects');
+const errorDisplay = document.getElementById('error');
 
-// Első gomb eseménykezelője (Felhasználó lekérés)
-button.addEventListener('click', () => { 
-    const selectedValue = document.getElementById("selects").value; // Érték a dropdownból
-    const textValue = document.getElementById("teszttext").value; // Érték az inputból
-
-    // POST kérés küldése a backendnek
-    fetch('http://localhost:3000/api/getuser', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: selectedValue, szoveg: textValue }) // Adatok JSON-ná alakítása
-    })
-    .then(response => response.json()) // JSON válasz konvertálása
-    .then(data => {
-        // Megjelenítés az oldalon
-        document.getElementById('user_id').innerText = `ID: ${data.id} | Név: ${data.name} | Email: ${data.email}`;
-    })
-    .catch(error => { document.getElementById('error').innerText = "Hiba: " + error.message; });
-});
-
-// Második gomb eseménykezelője (Adatmentés)
-button2.addEventListener('click', () => { 
-    const textValue = document.getElementById("teszttext").value;
-
-    fetch('http://localhost:3000/api/senduser', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ szoveg: textValue })
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById("user_id").innerText = data.message; // Visszaigazolás kiírása
-    })  
-    .catch(error => { document.getElementById('error').innerText = "Hiba: " + error.message; });
-});
-
-button3.addEventListener('click', () => {
-  const idvalue = document.getElementById('login_teszt_input').value;
-
-  fetch('http://localhost:3000/api/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include', // <--- EZ HIÁNYZIK A LOGIN KÉRÉSBŐL!
-    body: JSON.stringify({ nev: 'Teszt Elek', email: 'teszt@testmail.com', id: select.value })
-  })
-    .then(response => {
-      if (!response.ok) throw new Error(`HTTP hiba: ${response.status}`);
-      return response.json();
-    })
-    .then(data => {
-      document.getElementById('user_id').innerText = data.message;
-      if (data.success) {
-        button3.style.display = 'none';
-      }
-    })
-    .catch(error => {
-      document.getElementById('error').innerText = 'Hiba: ' + error.message;
-    });
-});
-
-// Kijelentkezés gomb eseménykezelője
-logoutBtn.addEventListener('click', async () => {
-  try {
-    const response = await fetch('http://localhost:3000/api/logout', {
-      method: 'POST',
-      credentials: 'include'
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      updateAuthUI(false);
-    }
-  } catch (error) {
-    document.getElementById('error').innerText = 'Hiba a kijelentkezéskor: ' + error.message;
-  }
-});
-// Felület frissítése a bejelentkezési állapot alapján
+// Felület frissítése az autentikációs állapot alapján
 const updateAuthUI = (isLoggedIn, userId = null) => {
   if (isLoggedIn) {
-    userStatus.innerText = `Bejelentkezve: ${userId}`;
-    button3.style.display = 'none';
-    loginInput.style.display = 'none';
-    logoutBtn.style.display = 'inline-block';
+    if (userStatus) userStatus.innerText = `Bejelentkezve: ${userId}`;
+    if (button3) button3.style.display = 'none';
+    if (loginInput) loginInput.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
   } else {
-    userStatus.innerText = '';
-    button3.style.display = 'inline-block';
-    loginInput.style.display = 'inline-block';
-    logoutBtn.style.display = 'none';
+    if (userStatus) userStatus.innerText = '';
+    if (button3) button3.style.display = 'inline-block';
+    if (loginInput) loginInput.style.display = 'inline-block';
+    if (logoutBtn) logoutBtn.style.display = 'none';
   }
 };
 
-
-/*
-
-
-const lekérGomb = document.getElementById('get_All_User');
-const tabla = document.getElementById('tablazat');
-
-
-
-lekérGomb.addEventListener('click', async () => {
-  console.log("Raszista");
-  
-  tabla.innerHTML += '<ul>Elek"</ul>';
-  /*try {
-    
-    const response = await fetch('http://localhost:3000/api/getalluser', {
+// Munkamenet ellenőrzése oldalbetöltéskor
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const response = await fetch('http://localhost:3000/api/check-session', {
       method: 'GET',
       credentials: 'include'
-    })
-    .then(response => {
-      const user = response.stringify(json());
-      tabla.innerHTML += '<ul>'+user+'</ul>';
-    })
-  } catch (error) {
-    
-  }*/
-//});
+    });
+
+    if (!response.ok) {
+      throw new Error('Nincs aktív munkamenet');
+    }
+
+    const data = await response.json();
+
+    if (data.loggedIn) {
+      updateAuthUI(true, data.userId);
+    } else {
+      updateAuthUI(false);
+    }
+  } catch {
+    updateAuthUI(false);
+  }
+});
+
+// Felhasználó lekérése (első gomb)
+if (button) {
+  button.addEventListener('click', async () => {
+    const selectedValue = select ? select.value : '';
+    const textElement = document.getElementById('teszttext');
+    const textValue = textElement ? textElement.value : '';
+
+    try {
+      const response = await fetch('http://localhost:3000/api/getuser', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: selectedValue, szoveg: textValue })
+      });
+
+      const data = await response.json();
+      if (userStatus) {
+        userStatus.innerText = `ID: ${data.id} | Név: ${data.name} | Email: ${data.email}`;
+      }
+    } catch (error) {
+      if (errorDisplay) errorDisplay.innerText = 'Hiba: ' + error.message;
+    }
+  });
+}
+
+// Adatmentés (második gomb)
+if (button2) {
+  button2.addEventListener('click', async () => {
+    const textElement = document.getElementById('teszttext');
+    const textValue = textElement ? textElement.value : '';
+
+    try {
+      const response = await fetch('http://localhost:3000/api/senduser', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ szoveg: textValue })
+      });
+
+      const data = await response.json();
+      if (userStatus) {
+        userStatus.innerText = data.message;
+      }
+    } catch (error) {
+      if (errorDisplay) errorDisplay.innerText = 'Hiba: ' + error.message;
+    }
+  });
+}
+
+// Bejelentkezés (harmadik gomb)
+if (button3) {
+  button3.addEventListener('click', async () => {
+    // Ha az inputba írt azonosítóval lépsz be, vagy a legördülőből választottal:
+    const selectedId = (loginInput && loginInput.value.trim()) || (select ? select.value : '');
+
+    try {
+      const response = await fetch('http://localhost:3000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ id: selectedId })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP hiba: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        updateAuthUI(true, data.userId || selectedId);
+      }
+    } catch (error) {
+      if (errorDisplay) errorDisplay.innerText = 'Hiba: ' + error.message;
+    }
+  });
+}
+
+// Kijelentkezés
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        updateAuthUI(false);
+      }
+    } catch (error) {
+      if (errorDisplay) errorDisplay.innerText = 'Hiba a kijelentkezéskor: ' + error.message;
+    }
+  });
+}
