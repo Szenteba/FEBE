@@ -81,12 +81,15 @@ export const userController = {
         });
     },
 
-    async lekerUser(req, res){
-        const user = userService.lekerUser();
+    async lekerUser(req, res) {
+    try {
+      const users = await userService.lekerUser();
 
-        return res.status(200).json({
-            nev: user.nev || null,
-            rank: user.rank || null
-        })
+      
+      return res.status(200).json(users);
+    } catch (error) {
+      console.error('Hiba a felhasználók lekérésekor:', error);
+      return res.status(500).json({ error: 'Szerverhiba történt a lekérés során' });
     }
+  }
 };

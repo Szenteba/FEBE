@@ -33,12 +33,8 @@ export const userRepository = {
         return { id: result.insertId, nev, email };
     },
 
-    async lekerUser(){
-        const [rows] = await db.query('SELECT teszt.nev, teszt.ranks from teszt')
-
-        return rows.map(row => ({
-            nev: row.nev,
-            rank: row.ranks
-        }));
+    async lekerUser() {
+        const [rows] = await db.query('SELECT nev, ranks FROM teszt');
+        return rows;
     }
 };

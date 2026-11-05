@@ -50,12 +50,7 @@ export const userService = {
         return { valid: true, session };
     },
 
-    lekerUser(){
-        const user = userRepository.lekeruser();
-
-        return {
-            nev: user.nev,
-            rank: user.rank
-        };
+    async lekerUser() {
+        return await userRepository.lekerUser();
     }
 };

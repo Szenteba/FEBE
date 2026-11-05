@@ -8,7 +8,7 @@ const userStatus = document.getElementById('user_id');
 const loginInput = document.getElementById('login_teszt_input');
 const select = document.getElementById('selects');
 const errorDisplay = document.getElementById('error');
-const LekérGomb = document.getElementById('get_All_User');
+const lekerGomb = document.getElementById('get_All_User');
 const tabla = document.getElementById('tablazat');
 
 // Felület frissítése az autentikációs állapot alapján
@@ -146,14 +146,48 @@ if (logoutBtn) {
   });
 }
 
-if(LekérGomb) {
-  LekérGomb.addEventListener('click', async () => {
-    const response = await fetch('http://localhost:3000/api/leker', {
-      method: 'GET',
-      credentials: 'include'
-    })
-    .then(response => {
-      tabla.innerHTML += '<ul>'+response.body+'</ul>'
-    })
-  })
+if (lekerGomb && tabla) {
+  lekerGomb.addEventListener('click', async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/leker', {
+        method: 'GET',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP hiba: ${response.status}`);
+      }
+
+      const users = await response.json();
+
+      tabla.innerHTML = '';
+      const li = document.createElement('li');
+      const ali = document.createElement('li')
+      beir("'user' ranks:")
+      users.forEach(user => {
+        if(user.ranks == "user"){
+          const ul = document.createElement('ul');
+          ul.innerText = `Név: ${user.nev} | Rang: ${user.ranks}`;
+          li.appendChild(ul);
+        }
+      })
+      beir("All users:")
+
+      function beir(szoveg){
+        const ul_szov = document.createElement('ul');
+        ul_szov.innerText = szoveg;
+        li.appendChild(ul_szov);
+      }
+
+      users.forEach(user => {
+        const ul = document.createElement('ul');
+        ul.innerText = `Név: ${user.nev} | Rang: ${user.ranks}`;
+        li.appendChild(ul);
+      });
+
+      tabla.appendChild(li);
+    } catch (error) {
+      console.error('Hiba a lekérés során:', error);
+    }
+  });
 }

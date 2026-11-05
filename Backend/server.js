@@ -19,7 +19,7 @@ app.post('/api/senduser', userController.sendUser);
 app.post('/api/login', userController.login);
 app.post('/api/logout', userController.logout);
 app.get('/api/check-session', userController.checkSession);
-app.get('api/leker', userController.lekerUser);
+app.get('/api/leker', userController.lekerUser);
 
 app.listen(3000, () => {
     console.log('Backend server is running on http://localhost:3000');
