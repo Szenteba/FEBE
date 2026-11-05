@@ -21,6 +21,6 @@ app.post('/api/logout', userController.logout);
 app.get('/api/check-session', userController.checkSession);
 app.get('/api/leker', userController.lekerUser);
 
-app.listen(3000, () => {
-    console.log('Backend server is running on http://localhost:3000');
+app.listen(3333, () => {
+    console.log('Backend server is running on http://localhost:3333');
 });
